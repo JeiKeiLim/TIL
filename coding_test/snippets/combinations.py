@@ -1,5 +1,7 @@
+from typing import List
 
-def get_every_combination(n: int):
+
+def get_every_combination(n: int) -> List[List[int]]:
     """Return all possible combinations of n elements
 
     Args:
