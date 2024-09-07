@@ -7,21 +7,14 @@ class Solution:
     def chalkReplacer(self, chalk: List[int], k: int) -> int:
         sum_of_chalk = sum(chalk)
         k = k - (sum_of_chalk * int(k // sum_of_chalk))
-        k -= sum_of_chalk
-
         n_student = len(chalk)
 
-        for i in range(n_student-1, -1, -1):
-            k += chalk[i]
-            if k >= 0:
+        for i in range(n_student):
+            k -= chalk[i]
+
+            if k < 0:
                 return i
 
-        # while k >= 0:
-        #     for i in range(n_student):
-        #         k -= chalk[i]
-        #
-        #         if k < 0:
-        #             return i
         return -1
 
 
