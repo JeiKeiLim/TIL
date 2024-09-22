@@ -30,7 +30,34 @@ Every integer in nums2 is present in nums1. Therefore, answer[1] = [].
 
 class Solution:
     def findDifference(self, nums1: List[int], nums2: List[int]) -> List[List[int]]:
-        pass
+        """
+        Started @ 08:30
+        Ended @ 08:36
+
+        O(nm)
+        """
+        answers = [[], []]
+
+        for num in nums1:
+            if num not in nums2 and num not in answers[0]:
+                answers[0].append(num)
+
+        for num in nums2:
+            if num not in nums1 and num not in answers[1]:
+                answers[1].append(num)
+
+        return answers
+
+
+class Solution2:
+    def findDifference(self, nums1: List[int], nums2: List[int]) -> List[List[int]]:
+        """
+        O(n+m)
+        """
+        set1 = set(nums1)
+        set2 = set(nums2)
+
+        return [list(set1 - set2), list(set2 - set1)]
 
 
 if __name__ == "__main__":
@@ -40,5 +67,5 @@ if __name__ == "__main__":
     ]
     answers = [[[1, 3], [4, 6]], [[3], []]]
 
-    tester = Tester(Solution().findDifference)
+    tester = Tester(Solution2().findDifference)
     tester.test(tests, answers)

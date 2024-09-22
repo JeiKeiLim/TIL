@@ -1,5 +1,7 @@
 from tester import Tester  # Assuming you have a Tester class for running tests
 
+from typing import List
+
 """
 1268. Search Suggestions System
 Medium
@@ -31,16 +33,58 @@ Output: [["havana"],["havana"],["havana"],["havana"],["havana"],["havana"]]
 
 class Solution:
     def suggestedProducts(
-        self, products: list[str], searchWord: str
-    ) -> list[list[str]]:
-        pass  # To be implemented
+        self, products: List[str], searchWord: str
+    ) -> List[List[str]]:
+        """
+        Started @ 08:13
+        Ended @ 08:19
+
+        O(nm^2) solution
+        """
+        result = []
+        products.sort()
+        for i in range(1, len(searchWord) + 1):
+            current_search = searchWord[:i]
+            current_result = []
+            for prod in products:
+                if prod[:i] == current_search:
+                    current_result.append(prod)
+
+                if len(current_result) == 3:
+                    break
+
+            result.append(current_result)
+
+        return result
+
+    def suggestedProducts2(
+        self, products: List[str], searchWord: str
+    ) -> List[List[str]]:
+        """
+        Started @ 08:20
+        Ended @ 08:29
+
+        Also O(nm)
+        """
+        result = [[] for _ in range(len(searchWord))]
+        products.sort()
+
+        for prod in products:
+            for i in range(len(searchWord)):
+                if i < len(prod) and prod[i] == searchWord[i]:
+                    if len(result[i]) < 3:
+                        result[i].append(prod)
+                else:
+                    break
+
+        return result
 
 
 if __name__ == "__main__":
     # Test cases
     tests = [
-        (["mobile", "mouse", "moneypot", "monitor", "mousepad"], "mouse"),  # Example 1
-        (["havana"], "havana"),  # Example 2
+        [["mobile", "mouse", "moneypot", "monitor", "mousepad"], "mouse"],  # Example 1
+        [["havana"], "havana"],  # Example 2
     ]
     answers = [
         [
@@ -60,5 +104,5 @@ if __name__ == "__main__":
         ],  # Expected output for Example 2
     ]
 
-    tester = Tester(Solution().suggestedProducts)
+    tester = Tester(Solution().suggestedProducts2)
     tester.test(tests, answers)

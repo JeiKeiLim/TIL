@@ -1,5 +1,7 @@
 from tester import Tester  # Assuming you have a Tester class for running tests
 
+from typing import List
+
 """
 841. Keys and Rooms
 Medium
@@ -38,20 +40,52 @@ Constraints:
 
 
 class Solution:
-    def canVisitAllRooms(self, rooms: list[list[int]]) -> bool:
-        pass
+    def canVisitAllRooms(self, rooms: List[List[int]]) -> bool:
+        """
+        O(n^2)
+
+        TODO: Optimize further if possible
+        """
+        rooms_to_visit = [i for i in range(1, len(rooms))]
+        keys_in_hands = rooms[0]
+
+        while len(keys_in_hands) > 0 and len(rooms_to_visit) > 0:
+            key = keys_in_hands.pop(0)
+
+            if key in rooms_to_visit:
+                rooms_to_visit.remove(key)
+                keys_in_hands += rooms[key]
+
+        return len(rooms_to_visit) <= 0
+
+
+class Solution2:
+    def canVisitAllRooms(self, rooms: List[List[int]]) -> bool:
+        rooms_to_visit = set(range(1, len(rooms)))
+        keys_in_hands = rooms[0]
+        idx = 0
+
+        while idx < len(keys_in_hands) and rooms_to_visit:
+            key = keys_in_hands[idx]
+            idx += 1
+
+            if key in rooms_to_visit:
+                rooms_to_visit.remove(key)
+                keys_in_hands.extend(rooms[key])
+
+        return len(rooms_to_visit) <= 0
 
 
 if __name__ == "__main__":
     # Test cases
     tests = [
-        [[1], [2], [3], []],  # Example 1: True
-        [[1, 3], [3, 0, 1], [2], [0]],  # Example 2: False
+        [[[1], [2], [3], []]],  # Example 1: True
+        [[[1, 3], [3, 0, 1], [2], [0]]],  # Example 2: False
     ]
     answers = [
         True,  # Expected output for Example 1
         False,  # Expected output for Example 2
     ]
 
-    tester = Tester(Solution().canVisitAllRooms)
+    tester = Tester(Solution2().canVisitAllRooms)
     tester.test(tests, answers)
