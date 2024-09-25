@@ -37,6 +37,9 @@ class Solution:
         O(n) solution
         """
         ts = [0, 1, 1]
+        if n == 1:
+            return 1
+
         if n <= len(ts):
             return sum(ts[:n])
 
@@ -51,12 +54,18 @@ class Solution:
 if __name__ == "__main__":
     # Test cases
     tests = [
+        [1],
+        [2],
+        [3],
         [4],  # Example 1
         [5],
         [6],
         [25],  # Example 2
     ]
     answers = [
+        1,
+        1,
+        2,
         4,  # Expected output for Example 1
         7,
         13,
