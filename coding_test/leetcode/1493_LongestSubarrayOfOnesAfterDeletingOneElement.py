@@ -31,16 +31,45 @@ Explanation: You must delete one element.
 
 class Solution:
     def longestSubarray(self, nums: List[int]) -> int:
-        pass
+        """
+        Started @ 17:15
+        Ended @ 17:24
+        Restarted @ 17:30
+        Ended @ 17:34
+
+        O(n) solution
+        """
+        cnt = 0
+        cnt_left = 0
+        max_cnt = 0
+        zero_cnt = 0
+        for num in nums + [0]:
+            if num == 1:
+                cnt += 1
+            else:
+                if (cnt_left + cnt) > max_cnt and cnt_left > 0:
+                    max_cnt = cnt_left + cnt
+                cnt_left = cnt
+                cnt = 0
+                zero_cnt += 1
+
+        if max_cnt == 0 and cnt_left > 0:
+            if zero_cnt > 1:
+                return cnt_left
+            return cnt_left - 1
+
+        return max_cnt
 
 
 if __name__ == "__main__":
     tests = [
-        [[1, 1, 0, 1], 3],
-        [[0, 1, 1, 1, 0, 1, 1, 0, 1], 5],
-        [[1, 1, 1], 2],
+        [[1, 1, 0, 1]],
+        [[0, 1, 1, 1, 0, 1, 1, 0, 1]],
+        [[1, 1, 1]],
+        [[0, 0, 0]],
+        [[0, 0, 1, 1]],
     ]
-    answers = [3, 5, 2]
+    answers = [3, 5, 2, 0, 2]
 
     tester = Tester(Solution().longestSubarray)
     tester.test(tests, answers)
