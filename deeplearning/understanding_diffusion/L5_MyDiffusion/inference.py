@@ -63,7 +63,7 @@ def get_args() -> argparse.Namespace:
     parser.add_argument(
         "--model",
         type=str,
-        default="./weights/",
+        default="./weights/best_model.pt",
         help="Path to the model weights.",
     )
     return parser.parse_args()
@@ -277,8 +277,7 @@ if __name__ == "__main__":
         in_channels=3, n_feat=args.n_feat, n_cfeat=args.n_c_feat, height=16
     ).to(device)
 
-    model_path = os.path.join(args.model, f"best_model.pt")
-    nn_model.load_state_dict(torch.load(model_path, map_location=device))
+    nn_model.load_state_dict(torch.load(args.model, map_location=device))
 
     denoiser = Denoiser(nn_model, args.n_steps, args.beta1, args.beta2, device)
 

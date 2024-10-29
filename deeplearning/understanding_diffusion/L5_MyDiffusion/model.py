@@ -27,32 +27,27 @@ class ResidualConvBlock(nn.Module):
             nn.GELU(),   # GELU activation function
         )
 
+        if self.same_channels:
+            self.shortcut = nn.Identity()
+        else:
+            self.shortcut = nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, padding=0)
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+
+        # Apply first convolutional layer
+        x1 = self.conv1(x)
+        # Apply second convolutional layer
+        x2 = self.conv2(x1)
 
         # If using residual connection
         if self.is_res:
-            # Apply first convolutional layer
-            x1 = self.conv1(x)
-
-            # Apply second convolutional layer
-            x2 = self.conv2(x1)
-
-            # If input and output channels are the same, add residual connection directly
-            if self.same_channels:
-                out = x + x2
-            else:
-                # If not, apply a 1x1 convolutional layer to match dimensions before adding residual connection
-                shortcut = nn.Conv2d(x.shape[1], x2.shape[1], kernel_size=1, stride=1, padding=0).to(x.device)
-                out = shortcut(x) + x2
+            out = self.shortcut(x) + x2
             #print(f"resconv forward: x {x.shape}, x1 {x1.shape}, x2 {x2.shape}, out {out.shape}")
 
             # Normalize output tensor
             return out / 1.414
-
         # If not using residual connection, return output of second convolutional layer
         else:
-            x1 = self.conv1(x)
-            x2 = self.conv2(x1)
             return x2
 
     # Method to get the number of output channels for this block
