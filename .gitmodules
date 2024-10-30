@@ -1,0 +1,3 @@
+[submodule "recommender_system/RecommenderSystemsAndDeepLearningInPython/machine_learning_examples"]
+	path = recommender_system/RecommenderSystemsAndDeepLearningInPython/machine_learning_examples
+	url = https://github.com/lazyprogrammer/machine_learning_examples.git
