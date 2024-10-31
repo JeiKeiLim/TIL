@@ -1,0 +1,12 @@
+name: RecommenderSystemsAndDeepLearningInPython
+channels:
+  - defaults
+dependencies:
+  - pandas=2.2.2
+  - pip=24.2
+  - python=3.10.15
+  - black-24.8.0
+  - pip:
+    - p_tqdm==1.4.2
+
+prefix: /home/limjk/miniconda3/envs/RecommenderSystemsAndDeepLearningInPython
