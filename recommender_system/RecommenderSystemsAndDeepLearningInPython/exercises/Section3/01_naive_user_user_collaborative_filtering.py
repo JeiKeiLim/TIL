@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     dataset = MovieLens20MDatasetLoader(path, subset_ratio=1.0)
     train_set, test_set = dataset.get_train_test_split(
-        test_size=0.01, shuffle_set=False
+        test_size=0.001, shuffle_set=False
     )
 
     print("Calculating mean ratings by user ...")
@@ -33,8 +33,10 @@ if __name__ == "__main__":
     )
 
     TOP_K = 30
+    MIN_OVERLAP = 5
 
     # Computing user-user similarity
+    mean_erros = []
     for test_user_id in tqdm(test_set.user_ids):
         data = test_set.get_user_data(test_user_id)
         test_user_mean_rating = test_mean_ratings_by_user[test_user_id]
@@ -54,6 +56,10 @@ if __name__ == "__main__":
             user_data = union_train_data[union_train_data["userId"] == user_id]
 
             user_rating_deviations: np.ndarray = user_data["deviation"].values  # type: ignore
+
+            if user_rating_deviations.size < MIN_OVERLAP:
+                continue
+
             test_rating_deviations: np.ndarray = data[  # type: ignore
                 data["movieId"].isin(user_data["movieId"])  # type: ignore
             ][
@@ -69,10 +75,13 @@ if __name__ == "__main__":
             weights.append([user_id, weight])
 
             weights.sort(key=lambda x: x[1], reverse=True)
-            ratio = pow((i + 1) / len(union_train_user_ids), 10)
+            # ratio = pow((i + 1) / len(union_train_user_ids), 10)
 
-            if len(weights) > TOP_K and weights[TOP_K][1] > (1 - ratio):
-                break
+            if len(weights) > TOP_K:
+                weights = weights[:TOP_K]
+                #
+                # if weights[-1][1] > (1 - ratio):
+                #     break
 
         weights = weights[: min(TOP_K, len(weights))]
 
@@ -94,17 +103,25 @@ if __name__ == "__main__":
                 weighted_rating_deviation = weight * user_data["deviation"]
                 weighted_rating_deviations.append(weighted_rating_deviation.values[0])
 
-            predicted_rating = test_user_mean_rating + sum(
-                weighted_rating_deviations
-            ) / (sum_weights + 1e-9)
-            predicted_rating = np.clip(predicted_rating, 0.0, 5.0)
+            if sum_weights == 0:
+                predicted_rating = test_user_mean_rating
+            else:
+                predicted_rating = (
+                    test_user_mean_rating
+                    + sum(weighted_rating_deviations) / sum_weights
+                )
+
+            predicted_rating = np.clip(predicted_rating, 0.5, 5.0)
             squared_error = (row["rating"] - predicted_rating) ** 2
             errors.append(squared_error)
 
             print(
-                f"    User ID: {test_user_id}, Item ID: {item_id}, Predicted Rating: {predicted_rating:.2f}, Actual Rating: {row['rating']:.2f}, Squared Error: {squared_error:.2f}"
+                f"    User ID: {test_user_id}, Item ID: {item_id}, Predicted vs Actual Ratings: {predicted_rating:.2f} vs {row['rating']:.2f}, Difference: {np.sqrt(squared_error):.2f}"
             )
 
         print(
             f"User ID: {test_user_id}, RMSE: {np.sqrt(np.mean(errors)):.2f}, MAE: {np.mean(errors):.2f}"
         )
+        mean_erros.append(np.mean(errors))
+
+    print(f"Mean RMSE: {np.mean(mean_erros):.2f}")
