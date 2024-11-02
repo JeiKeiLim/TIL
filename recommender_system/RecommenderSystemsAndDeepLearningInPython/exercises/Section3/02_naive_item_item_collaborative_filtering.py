@@ -36,14 +36,20 @@ if __name__ == "__main__":
     weights = {}
 
     TOP_K = 30
+    MIN_OVERLAP = 5
     mean_erros = []
-    for test_user_id in tqdm(unique_test_user_ids, total=unique_test_user_ids.shape[0]):
+    for test_user_id in tqdm(
+        unique_test_user_ids,
+        total=unique_test_user_ids.shape[0],
+        desc="Calculating weights",
+    ):
         test_user_data = test_set.get_user_data(test_user_id)
         test_item_ids = test_user_data["movieId"].unique().tolist()
-        errors = []
 
-        for target_item_id in test_item_ids:
-            target_item_data = train_set.get_item_data(target_item_id)
+        train_user_data = train_set.get_item_data(test_item_ids)
+
+        for target_item_id in tqdm(test_item_ids, total=len(test_item_ids), desc=""):
+            target_item_data = train_user_data.query(f"movieId == {target_item_id}")
 
             # Calculate weights
             for train_item_id in test_item_ids:
@@ -52,23 +58,28 @@ if __name__ == "__main__":
                 if (target_item_id, train_item_id) in weights:
                     continue
 
-                train_item_data = train_set.get_item_data(train_item_id)
+                train_item_data = train_user_data.query(f"movieId == {train_item_id}")
 
-                common_item_data_i = target_item_data[
-                    target_item_data["userId"].isin(train_item_data["userId"])
-                ].sort_values(
-                    by="userId"
-                )  # type: ignore
-                common_item_data_j = train_item_data[
-                    train_item_data["userId"].isin(target_item_data["userId"])
-                ].sort_values(
-                    by="userId"
-                )  # type: ignore
+                common_user_id = np.intersect1d(
+                    target_item_data["userId"], train_item_data["userId"]
+                )
+                common_user_id = np.unique(common_user_id).tolist()
 
-                if common_item_data_i.shape[0] == 0:
+                if len(common_user_id) < MIN_OVERLAP:
                     continue
 
-                nominator = np.dot(
+                common_item_data_i = target_item_data.query(
+                    f"userId in {common_user_id}"
+                ).sort_values(
+                    by="userId"
+                )  # type: ignore
+                common_item_data_j = train_item_data.query(
+                    f"userId in {common_user_id}"
+                ).sort_values(
+                    by="userId"
+                )  # type: ignore
+
+                numerator = np.dot(
                     common_item_data_i["deviation"], common_item_data_j["deviation"]
                 )
 
@@ -76,9 +87,14 @@ if __name__ == "__main__":
                     common_item_data_i["deviation"]
                 ) * np.linalg.norm(common_item_data_j["deviation"])
 
-                weights[(target_item_id, train_item_id)] = nominator / denominator
-                weights[(train_item_id, target_item_id)] = nominator / denominator
+                weight = numerator / (denominator + 1e-9)
 
+                weights[(target_item_id, train_item_id)] = weight
+                weights[(train_item_id, target_item_id)] = weight
+
+        errors = []
+        for target_item_id in test_item_ids:
+            target_item_data = train_user_data.query(f"movieId == {target_item_id}")
             # Sort weights
             sorted_weights = []
             for train_item_id in test_item_ids:
@@ -98,18 +114,24 @@ if __name__ == "__main__":
                     sorted_weights = sorted_weights[:TOP_K]
 
             # Calculate prediction
-            nominator = 0
+            numerator = 0
             sum_weights = sum([abs(weight) for _, weight in sorted_weights])
             for train_item_id, weight in sorted_weights:
                 test_deviation = test_user_data.query(f"movieId == {train_item_id}")[
                     "deviation"
                 ].values[0]
 
-                nominator += weight * test_deviation
+                numerator += weight * test_deviation
 
-            prediction = (
-                train_mean_item_ratings[target_item_id] + nominator / sum_weights
-            )
+            if target_item_id not in train_mean_item_ratings:
+                continue
+
+            if sum_weights == 0:
+                prediction = train_mean_item_ratings[target_item_id]
+            else:
+                prediction = (
+                    train_mean_item_ratings[target_item_id] + numerator / sum_weights
+                )
             prediction = np.clip(prediction, 0.5, 5.0)
 
             answer = test_user_data.query(f"movieId == {target_item_id}")[

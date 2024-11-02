@@ -2,8 +2,8 @@
 
 ## Notation
 
-<p align="center">
-<img src="" width="0" />
+<p align="center" style="display: none;">
+    <img src="" width="0" />
 </p>
 
 $$ s(j) = \frac{\sum_{i \in \Omega_j} r_{ij}}{|\Omega_j|} $$
@@ -30,7 +30,9 @@ $$ \hat{dev}(i, j) = \frac{\sum_{i' \in \Omega_j} dev(i', j)}{|\Omega_j|} $$
 $$ s(i, j) = \bar{r}(i) + \hat{dev}(i, j) $$
 
 ### With weights
+
 - $w_{ii'}$: similarity(weight) between users $i$ and $i'$
+
 $$ s(i, j) = \bar r_j + \frac{\sum_{i' \in \Omega_j} w_{ii'} \\{ r_{i'j} - \bar r_{i'} \\}}{\sum_{i' \in \Omega_j} |w_{ii'}|} $$
 
 #### Pearson correlation coefficient
