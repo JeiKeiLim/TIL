@@ -61,4 +61,43 @@ $$ \cos{\theta} = \frac{x^Ty}{|x||y|} = \frac{\sum_{i=1}^N x_iy_i}{\sqrt{\sum_{i
 - $k$ is typically 20-50.
 
 
+## Item-Item collaborative filtering
+- Item-Item collaborative filtering calculates the similarity between items, not users.
 
+### Item Correlation
+
+$$ w_{jj'} = \frac{\sum_{i \in \Omega_{jj'}} (r_{ij} - \bar r_j)(r_{ij'} - \bar r_{j'})}{\sqrt{\sum_{i \in \Omega_{jj'}} (r_{ij} - \bar r_j)^2} \sqrt{\sum_{i \in \Omega_{jj'}} (r_{ij'} - \bar r_{j'})^2}} $$
+
+- $\Omega_j$: set of all users who rated item $j$
+- $\Omega_{jj'}$: set of all users who rated both items $j$ and $j'$
+- $\bar r_j$: average rating of item $j$
+
+
+### Item score
+
+$$ s(i, j) = \bar r_j + \frac{\sum_{j' \in \Psi_i} w_{jj'}(r_{ij'} - \bar r_{j'})}{\sum_{j' \in \Psi_i} |w_{jj'}|} $$
+
+- $\Psi_i$: set of items rated by user $i$
+
+
+# Summary of Collaborative Filtering Approaches
+
+## User-User Collaborative Filtering
+- **Goal**: Predict a user's rating for an item by using ratings from similar users.
+- **Process**:
+  1. Find users who have rated the target item and whose rating patterns are similar to the target user.
+  2. Select a set of similar users based on a similarity metric (e.g., cosine similarity or Pearson correlation).
+  3. Use the ratings from these similar users on the target item to predict the target user’s rating, typically by averaging or weighted averaging.
+- **Personalization**: The recommendation is tailored based on preferences of users with similar tastes.
+
+## Item-Item Collaborative Filtering
+- **Goal**: Predict a user's rating for an item by using their own ratings on similar items.
+- **Process**:
+  1. Identify items similar to the target item based on ratings from all users.
+  2. Select items (that the target user has rated) that are most similar to the target item.
+  3. Predict the target user’s rating for the target item by taking a weighted average of their ratings on these similar items, using the similarity scores as weights.
+- **Personalization**: The recommendation is personalized by focusing on items similar to those the user has already rated highly.
+
+## Key Differences
+- **User-User CF**: Focuses on finding similar users and using their ratings on the target item.
+- **Item-Item CF**: Focuses on finding similar items and using the target user’s own ratings on these items.
