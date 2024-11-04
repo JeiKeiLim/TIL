@@ -45,10 +45,8 @@ if __name__ == "__main__":
     )
 
     K = 10
-    EPOCHS = 500
-
-    unique_train_users = train_set.data["userId"].unique()
-    unique_train_items = train_set.data["movieId"].unique()
+    EPOCHS = 1000
+    LR = 100.0
 
     global_item_bias = np.mean(train_set.data["rating"].values)  # type: ignore
 
@@ -58,42 +56,35 @@ if __name__ == "__main__":
         dataset.user_ids.shape[0], dataset.item_ids.shape[0], K, global_item_bias
     ).to(device)
 
-    n_items_by_user = dataset.data.groupby("userId").size()
-    n_users_by_item = dataset.data.groupby("movieId").size()
+    train_user_ids = torch.tensor(train_set.data["userId"].values, device=device)
+    train_item_ids = torch.tensor(train_set.data["movieId"].values, device=device)
+    train_ratings = torch.tensor(
+        train_set.data["rating"].values, device=device, dtype=torch.float32
+    )
+    test_user_ids = torch.tensor(test_set.data["userId"].values, device=device)
+    test_item_ids = torch.tensor(test_set.data["movieId"].values, device=device)
+    test_ratings = torch.tensor(
+        test_set.data["rating"].values, device=device, dtype=torch.float32
+    )
 
-    item_ids_by_user = dataset.data.groupby("userId")["movieId"].apply(list)
-    user_ids_by_item = dataset.data.groupby("movieId")["userId"].apply(list)
-
-    LR = 0.01
-
-    optimizer = torch.optim.Adam(model.parameters(), lr=LR)
-    loss_fn = torch.nn.MSELoss()
+    optimizer = torch.optim.SGD(model.parameters(), lr=LR)
+    loss_fn = nn.MSELoss()
 
     p_bar = tqdm(range(EPOCHS), desc="Training")
     for epoch in p_bar:
+        prediction = model(train_user_ids, train_item_ids)
 
-        test_user_ids = torch.tensor(train_set.data["userId"].values, device=device)
-        test_item_ids = torch.tensor(train_set.data["movieId"].values, device=device)
-        test_ratings = torch.tensor(
-            train_set.data["rating"].values, device=device, dtype=torch.float32
-        )
-        prediction = model(test_user_ids, test_item_ids)
-
-        train_loss = loss_fn(prediction, test_ratings)
+        train_loss = loss_fn(prediction, train_ratings)
 
         optimizer.zero_grad()
         train_loss.backward()
         optimizer.step()
 
         with torch.no_grad():
-            test_user_ids = torch.tensor(test_set.data["userId"].values, device=device)
-            test_item_ids = torch.tensor(test_set.data["movieId"].values, device=device)
-            test_ratings = torch.tensor(
-                test_set.data["rating"].values, device=device, dtype=torch.float32
-            )
             prediction = model(test_user_ids, test_item_ids)
             test_loss = loss_fn(prediction, test_ratings)
 
         p_bar.set_postfix(
             {"Loss(Train)": train_loss.item(), "Loss(Test)": test_loss.item()}
         )
+
