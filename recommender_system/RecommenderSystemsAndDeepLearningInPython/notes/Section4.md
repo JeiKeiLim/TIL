@@ -175,4 +175,107 @@ $$ b_i = \frac{1}{|\Psi_i| + \lambda} \sum_{j \in \Psi_i} (r_{ij} - w_i^T u_j - 
 
 $$ c_j = \frac{1}{|\Gamma_j| + \lambda} \sum_{i \in \Gamma_j} (r_{ij} - w_i^T u_j - b_i - \mu) $$
 
+## Singular Value Decomposition (SVD)
+
+$$ X = USV^T $$
+
+- $X$: Matrix to factorize ($N \times M$)
+- $U$: Left singular vectors ($N \times M$)
+- $S$: Singular values ($M \times M$)
+- $V$: Right singular vectors ($M \times M$)
+
+### Truncated SVD
+
+- $U (N \times K), S (K \times K), V (M \times K) $ results in $N \times M$ matrix
+
+$$ X = U'V^T $$
+
+- $S$ can be included in $U$ or $V$
+
+### Finding $U$, $S$, and $V$
+
+- $X^T X = V S^2 V^T$ ($M \times M$)
+- $X X^T = U S^2 U^T$ ($N \times N$)
+
+Find eigenvalues and eigenvectors of $X^T X$ and $X X^T$.
+$$ \lambda_1, \lambda_2, \cdots, \lambda_M $$
+
+- $S$ is just a diagonal matrix with $\sqrt{\lambda_i}$ on the diagonal.
+
+$$ S = \begin{bmatrix} \sqrt{\lambda_1} & 0 & \cdots & 0 \\
+        0 & \sqrt{\lambda_2} & \cdots & 0 \\
+        \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & \cdots & \sqrt{\lambda_M} \end{bmatrix} $$
+
+- $U$ and $V$ are just the eigenvectors of $X X^T$ and $X^T X$ respectively.
+
+$$ (X^T X) v_i = \lambda_i v_i $$
+$$ (X X^T) u_i = \lambda_i u_i $$
+
+$$ U = \begin{bmatrix} u_1 & u_2 & \cdots & u_N \end{bmatrix} $$
+$$ V = \begin{bmatrix} v_1 & v_2 & \cdots & v_M \end{bmatrix} $$
+
+$$ u_i^T u_j = 0 \text{ if } i \neq j $$
+$$ v_i^T v_j = 0 \text{ if } i \neq j $$
+
+
+## Probabilistic Matrix factorization
+
+$$ \underline{R} \sim N(WU^T, \sigma^2) $$
+$$ r_{ij} \sim N(w_i^T u_j, \sigma^2) $$
+
+- $\underline{R}$: Mean of the distribution
+
+### Maximum likelihood estimation
+
+$$ L = \prod_{i,j \in \Omega} \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left ( -\frac{(r_{ij} - w_i^T u_j)^2}{2\sigma^2} \right ) $$
+
+$$ W, U = \arg \max_{W, U} L $$
+
+$$ \log L = C - \sum_{i,j \in \Omega} \frac{(r_{ij} - w_i^T u_j)^2}{2\sigma^2} $$
+
+### MAP estimation
+
+$$ MLE: p(R|W, U) $$
+$$ MAP: p(W, U|R) $$
+
+$$ p(W, U|R) = \frac{p(R|W, U) p(W) p(U)}{p(R)} $$
+
+- $p(W)$, $p(U)$: Prior distribution
+- $p(R)$: Marginal likelihood which is constant, so we can ignore it.
+
+- $p(W)$ and $p(U)$ are usually Gaussian distributions.
+    - $p(W) = N(0, \lambda^{-1} I)$
+    - $p(U) = N(0, \lambda^{-1} I)$
+
+$$ L = \prod_{i,j \in \Omega} \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left ( -\frac{(r_{ij} - w_i^T u_j)^2}{2\sigma^2} \right ) \cdot \frac{1}{\sqrt{2\pi \lambda}} \exp \left ( -\frac{||W||^2}{2\lambda} \right ) \cdot \frac{1}{\sqrt{2\pi \lambda}} \exp \left ( -\frac{||U||^2}{2\lambda} \right ) $$
+
+$$ L = C_0 - C_1 \sum_{i,j \in \Omega} (r_{ij} - \frac{\lambda}{2})^2 - \frac{\lambda}{2} ||W||^2 - \frac{\lambda}{2} ||U||^2 $$
+
+- This is equivalent to adding a regularization term to the loss function.
+
+## Bayesian matrix factorization
+
+### Expected value in general
+
+$$ E[X] = \int_{-\infty}^{\infty} x p(x) dx $$
+
+### Expected value for matrix factorization
+
+$$ E[r_{ij}|R] = \int r_{ij} p(r_{ij}|R) dr_{ij} $$
+
+$$ E[r_{ij}|R] = \int r_{ij} p(r_{ij}|W, U) p(W, U|R) dW dU dr_{ij} $$
+
+- $p(r_{ij}|W, U)$: likelihood
+- $p(W, U|R)$: posterior
+
+### Isolating $r_{ij}$ term
+
+$$ \int r_{ij} p(r_{ij}|W, U) dr_{ij} = E(r_{ij}|W, U) = w_i^T u_j $$
+$$ r_{ij} \sim N(w_i^T u_j, \sigma^2) $$
+
+$$ E[r_{ij}|R] = \int w_i^T u_j p(W, U|R) dW dU $$
+
+$$ E[r_{ij}|R] = E[w_i^T u_j|R] \approx \frac{1}{T} \sum_{t=1}^T w_i^{(t)T} u_j^{(t)} $$
+
 

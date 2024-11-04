@@ -41,7 +41,7 @@ if __name__ == "__main__":
     bias_user = np.zeros(dataset.user_ids.shape[0])
     bias_item = np.zeros(dataset.item_ids.shape[0])
 
-    regularization = 20.0
+    regularization = 20.
 
     n_items_by_user = dataset.data.groupby("userId").size()
     n_users_by_item = dataset.data.groupby("movieId").size()
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     user_ids_by_item = dataset.data.groupby("movieId")["userId"].apply(list)
 
     for epoch in tqdm(range(EPOCHS), desc="Training"):
-        for i in tqdm(range(unique_train_users.shape[0]), desc="Solving W"):
+        for i in tqdm(dataset.user_ids, desc="Solving W"):
             # with bias and regularization
             m_ids = item_ids_by_user[i]
 
@@ -72,7 +72,7 @@ if __name__ == "__main__":
                 - bias_item[m_ids]
             ) / (regularization + n_items_by_user[i])
 
-        for j in tqdm(range(unique_train_items.shape[0]), desc="Solving U"):
+        for j in tqdm(dataset.item_ids, desc="Solving U"):
             # with bias and regularization
             u_ids = user_ids_by_item[j]
 

@@ -1,11 +1,17 @@
 name: RecommenderSystemsAndDeepLearningInPython
 channels:
+  - pytorch
+  - nvidia
   - defaults
 dependencies:
   - pandas=2.2.2
   - pip=24.2
   - python=3.10.15
   - black-24.8.0
+  - pytorch=2.5.1
+  - pytorch-cuda=12.4
+  - torchvision
+  - torchaudio
   - pip:
     - p_tqdm==1.4.2
 
