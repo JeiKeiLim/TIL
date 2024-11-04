@@ -21,13 +21,22 @@ class MovieLens20MDatasetLoader:
 
         print(f"Dataset loaded. Shape: {self.data.shape}")
 
-        self.user_ids = np.array(self.data["userId"].unique())
-        self.item_ids = np.array(self.data["movieId"].unique())
+        user_ids = np.array(self.data["userId"].unique())
+        item_ids = np.array(self.data["movieId"].unique())
 
         # Reindexing user and item IDs to start from 0 and increment by 1
-        item_id_map = {item_id: idx for idx, item_id in enumerate(self.item_ids)}
-        self.data["userId"] = self.data["userId"] - 1
-        self.data["movie_idx"] = self.data.apply(lambda row: item_id_map[row["movieId"]], axis=1)
+        item_id_map = {item_id: idx for idx, item_id in enumerate(item_ids)}
+        user_id_map = {user_id: idx for idx, user_id in enumerate(user_ids)}
+
+        self.data["movie_idx"] = self.data["movieId"].copy()
+
+        self.data["userId"] = self.data["userId"].apply(lambda val: user_id_map[val])
+        self.data["movieId"] = self.data["movieId"].apply(
+            lambda val: item_id_map[val]
+        )
+
+        self.user_ids = np.array(self.data["userId"].unique())
+        self.item_ids = np.array(self.data["movieId"].unique())
 
     def get_train_test_split(
         self, test_size: float = 0.2, shuffle_set: bool = False
