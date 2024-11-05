@@ -71,7 +71,7 @@ if __name__ == "__main__":
         train_set.data["rating"].mean(), device=device, dtype=torch.float32
     )
 
-    optimizer = torch.optim.SGD(model.parameters(), lr=LR)
+    optimizer = torch.optim.SGD(model.parameters(), lr=LR, momentum=0.9)
     loss_fn = nn.MSELoss()
 
     p_bar = tqdm(range(EPOCHS), desc="Training")
