@@ -153,3 +153,11 @@ $$ \text{Maximize } p(v) \text{ wrt } W, b, c $$
 
 $$ W, b, c = \arg \max_{W, b, c} p(v; W, b, c) = \arg \max_{W, b, c} \log p(v; W, b, c) $$
 
+##### Example of $\mu$ and $\sigma^2$
+
+$$ \mu, \sigma^2 = \arg \max_{\mu, \sigma^2} \log \mathcal{N}(x; \mu, \sigma^2) $$
+
+$$ \mu = \frac{1}{N} \sum_{i=1}^N x_i $$
+$$ \sigma^2 = \frac{1}{N} \sum_{i=1}^N (x_i - \mu)^2 $$
+
+

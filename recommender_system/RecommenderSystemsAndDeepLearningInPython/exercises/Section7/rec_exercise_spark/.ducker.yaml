@@ -1,0 +1,12 @@
+run_arg:
+    - --privileged
+    - -e DISPLAY=
+    - -e TERM=xterm-256color
+    - -v /tmp/.X11-unix:/tmp/.X11-unix:ro
+    - -v /dev:/dev
+    - -v /home/limjk/Datasets:/home/user/Datasets
+    - --network host
+build_arg: []
+mount_pwd: true
+default_shell: zsh
+lastexecid: fa6c963ae207
