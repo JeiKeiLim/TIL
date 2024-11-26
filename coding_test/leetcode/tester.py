@@ -47,7 +47,7 @@ class Tester:
             predict[i] = self.test_func(*test)
 
             print("Case #%d" % (i + 1), end="")
-            if self.verbose > 0 or len(test[0]) < 10:
+            if self.verbose > 0 or len(test[0]) < 20:
                 print(" ::%s" % (test))
             else:
                 print("")
