@@ -10,30 +10,40 @@ class ListNode:
         self.next: Optional[ListNode] = next
 
     def __repr__(self) -> str:
+        node_map = {}
+
         result = []
         node = self
         while node is not None:
+            if node.val not in node_map:
+                node_map[node.val] = [node]
+            elif node in  node_map[node.val]:
+                result.append(f"(Cycle) -> {node.val}")
+                break
+            else:
+                node_map[node.val].append(node)
+
             result.append(node.val)
             node = node.next
         return str(result)
 
-    def __eq__(self, other: "ListNode") -> bool:
-        node1 = self
-        node2 = other
-
-        while node1 is not None and node2 is not None and node1.val == node2.val:
-            node1 = node1.next
-            node2 = node2.next
-
-        if node1 is None and node2 is None:
-            return True
-
-        if (node1 is None and node2 is not None) or (
-            node1 is not None and node2 is None
-        ):
-            return False
-
-        return node1.val == node2.val
+    # def __eq__(self, other: "ListNode") -> bool:
+    #     node1 = self
+    #     node2 = other
+    #
+    #     while node1 is not None and node2 is not None and node1.val == node2.val:
+    #         node1 = node1.next
+    #         node2 = node2.next
+    #
+    #     if node1 is None and node2 is None:
+    #         return True
+    #
+    #     if (node1 is None and node2 is not None) or (
+    #         node1 is not None and node2 is None
+    #     ):
+    #         return False
+    #
+    #     return node1.val == node2.val
 
 
 def get_ListNode(nums: List[int]) -> ListNode:
