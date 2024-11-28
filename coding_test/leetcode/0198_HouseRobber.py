@@ -26,20 +26,28 @@ Explanation: Rob house 1 (money = 2), rob house 3 (money = 9), and rob house 5 (
 """
 
 
+class Solution3:
+    def rob(self, nums: List[int]) -> int:
+        dp = [0] * (len(nums) + 2)
+
+        for i in range(2, len(nums)+2):
+            dp[i] = max(dp[i-1], nums[i-2] + dp[i-2])
+
+        return dp[-1]
+
+
 class Solution:
     def rob(self, nums: List[int]) -> int:
         """
         O(n^2) solution?
         TODO: I may need to revisit here to improve its time complexity
         """
+
         def trace(nums: List[int], money: int) -> int:
             if len(nums) == 0:
                 return money
 
-            return max(
-                trace(nums[2:], money + nums[0]),
-                trace(nums[1:], money)
-            )
+            return max(trace(nums[2:], money + nums[0]), trace(nums[1:], money))
 
         return trace(nums, 0)
 
@@ -58,10 +66,7 @@ class Solution2:
             if idx in memo:
                 return memo[idx]
 
-            memo[idx] = max(
-                trace(idx + 1),
-                nums[idx] + trace(idx + 2)
-            )
+            memo[idx] = max(trace(idx + 1), nums[idx] + trace(idx + 2))
             return memo[idx]
 
         return trace(0)
@@ -80,5 +85,5 @@ if __name__ == "__main__":
         67,
     ]
 
-    tester = Tester(Solution2().rob)
+    tester = Tester(Solution3().rob)
     tester.test(tests, answers)
