@@ -28,10 +28,31 @@ searchWord consists of lowercase English letters.
 
 
 class Solution:
+    def isPrefixOfWord2(self, sentence: str, searchWord: str) -> int:
+        search_idx = 0
+        word_idx = 1
+        for char in sentence:
+            if char == " ":
+                word_idx += 1
+                search_idx = 0
+                continue
+
+            if search_idx < 0:
+                continue
+
+            if char == searchWord[search_idx]:
+                search_idx += 1
+            else:
+                search_idx = -1
+
+            if search_idx == len(searchWord):
+                return word_idx
+        return -1
+
     def isPrefixOfWord(self, sentence: str, searchWord: str) -> int:
         for i, word in enumerate(sentence.split(" ")):
             if word.startswith(searchWord):
-                return i+1
+                return i + 1
 
         return -1
 
@@ -41,12 +62,14 @@ if __name__ == "__main__":
         ["i love eating burger", "burg"],
         ["this problem is an easy problem", "pro"],
         ["i am tired", "you"],
+        ["hellohello hellohellohello", "ell"],
     ]
     answers = [
         4,
         2,
         -1,
+        -1,
     ]
 
-    tester = Tester(Solution().isPrefixOfWord)
+    tester = Tester(Solution().isPrefixOfWord2)
     tester.test(tests, answers)
