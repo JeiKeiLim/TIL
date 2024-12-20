@@ -65,6 +65,21 @@ class TreeNode:
         traverse(self)
         return str(result)
 
+    def __len__(self) -> int:
+        length = [0]
+
+        def traverse(node: Optional[TreeNode]):
+            if node is None:
+                return
+
+            length[0] += 1
+
+            traverse(node.left)
+            traverse(node.right)
+
+        traverse(self)
+        return length[0]
+
 
 def get_TreeNode(nums: List[Optional[int]]) -> TreeNode:
     root = TreeNode(nums[0])
