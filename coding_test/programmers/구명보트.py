@@ -27,7 +27,7 @@ def solution(people: List[int], limit: int) -> int:
     people.sort()
 
     i = 0
-    j = len(people)-1
+    j = len(people) - 1
 
     while i < j:
         if people[j] + people[i] > limit:
