@@ -68,12 +68,12 @@ if __name__ == "__main__":
         [["leetcode", "et", "code"]],
         [["blue", "green", "bu"]],
         [["leetcoder", "leetcode", "od", "hamlet", "am"]],
-        # [
-        #     [
-        #         "".join([chr(random.randint(ord("a"), ord("z"))) for _ in range(100)])
-        #         for _ in range(100)
-        #     ]
-        # ],
+        [
+            [
+                "".join([chr(random.randint(ord("a"), ord("z"))) for _ in range(random.randint(1, 1000))])
+                for _ in range(2000)
+            ]
+        ],
     ]
     answers = [["as", "hero"], ["et", "code"], [], ["leetcode", "od", "am"], []]
 
