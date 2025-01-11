@@ -1,4 +1,16 @@
 import time
+import random
+
+
+def generate_random_char() -> str:
+    return chr(random.randint(ord("a"), ord("z")))
+
+
+def generate_random_string(min_n: int, max_n: int = -1) -> str:
+    if max_n < min_n:
+        max_n = min_n
+    n = random.randint(min_n, max_n)
+    return "".join([generate_random_char() for _ in range(n)])
 
 
 class Tester:
