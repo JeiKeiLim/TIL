@@ -1,16 +1,30 @@
 import time
 import random
 
-
-def generate_random_char() -> str:
-    return chr(random.randint(ord("a"), ord("z")))
+from typing import List
 
 
-def generate_random_string(min_n: int, max_n: int = -1) -> str:
+def generate_random_char(start: str = "a", end: str = "z") -> str:
+    return chr(random.randint(ord(start), ord(end)))
+
+
+def generate_random_string(
+    min_n: int, max_n: int = -1, start_char: str = "a", end_char: str = "z"
+) -> str:
     if max_n < min_n:
         max_n = min_n
     n = random.randint(min_n, max_n)
-    return "".join([generate_random_char() for _ in range(n)])
+    return "".join([generate_random_char(start_char, end_char) for _ in range(n)])
+
+
+def generate_random_int_array(
+    min_n: int, max_n: int = -1, start_n: int = 0, end_n: int = 1000
+) -> List[int]:
+    if max_n < min_n:
+        max_n = min_n
+    n = random.randint(min_n, max_n)
+
+    return [random.randint(start_n, end_n) for _ in range(n)]
 
 
 class Tester:
