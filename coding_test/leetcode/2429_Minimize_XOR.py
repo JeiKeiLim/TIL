@@ -31,6 +31,28 @@ Constraints:
 
 
 class Solution:
+    def minimizeXor2(self, num1: int, num2: int) -> int:
+        n_bit2 = bin(num2)[2:].count("1")
+        bit1 = (["0"] * n_bit2) + list(bin(num1)[2:])
+
+        for i in range(len(bit1)):
+            if n_bit2 > 0 and bit1[i] == "1":
+                n_bit2 -= 1
+            else:
+                bit1[i] = "0"
+
+        i = len(bit1) - 1
+        while n_bit2 > 0:
+            if bit1[i] == "0":
+                bit1[i] = "1"
+                n_bit2 -= 1
+            i -= 1
+
+        answer = 0
+        for n_shift, val in enumerate(bit1[::-1]):
+            answer += int(val) << n_shift
+        return answer
+
     def minimizeXor(self, num1: int, num2: int) -> int:
         def to_bits(n: int) -> str:
             result = ""
@@ -73,9 +95,10 @@ if __name__ == "__main__":
         [1, 12],
         [4, 9],
         [4, 8],
-        [189237217, 8123]
+        [189237217, 8123],
+        [1, 536870911],
     ]
-    answers = [3, 3, 5, 4, 189236992]
+    answers = [3, 3, 5, 4, 189236992, 536870911]
 
-    tester = Tester(Solution().minimizeXor)
+    tester = Tester(Solution().minimizeXor2)
     tester.test(tests, answers)
