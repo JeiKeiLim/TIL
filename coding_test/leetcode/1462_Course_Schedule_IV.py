@@ -79,14 +79,19 @@ if __name__ == "__main__":
         [2, [], [[1, 0], [0, 1]]],
         [3, [[1, 2], [1, 0], [2, 0]], [[1, 0], [1, 2]]],
         [3, [[2, 0], [1, 2]], [[2, 1], [1, 0]]],
+        [
+            100,
+            [generate_random_int_array(2, end_n=99) for _ in range(int(100 * 99 / 2))],
+            [generate_random_int_array(2, end_n=99) for _ in range(10**4)],
+        ],
     ]
     answers = [
         [False, True],
         [False, False],
         [True, True],
         [True, False],
-        [False]
+        [True] * (10**4),
     ]
 
-    tester = Tester(Solution().checkIfPrerequisite)
+    tester = Tester(Solution().checkIfPrerequisite, verbose=0)
     tester.test(tests, answers)

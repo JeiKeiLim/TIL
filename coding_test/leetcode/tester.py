@@ -67,16 +67,23 @@ class Tester:
     def test(self, tests, answers, exact_match=False):
 
         predict = [[]] * len(tests)
-        for i, test in enumerate(tests):
+        for i, test_vals in enumerate(tests):
             s_time = time.time()
 
-            predict[i] = self.test_func(*test)
+            predict[i] = self.test_func(*test_vals)
 
-            print("Case #%d" % (i + 1), end="")
-            if self.verbose > 0 or len(test[0]) < 20:
-                print(" ::%s" % (test))
-            else:
-                print("")
+            print("Case #%d" % (i + 1))
+            for j in range(len(test_vals)):
+                n_vals = 1
+                try:
+                    n_vals = len(test_vals[j])
+                except Exception:
+                    pass
+                print("    Arg #%d - " % (j+1), end="")
+                if self.verbose > 0 or n_vals < 20:
+                    print("%s" % (test_vals[j]))
+                else:
+                    print("Too long, skip printing")
 
             if self.verbose > 0 or type(predict[i]) != list or len(predict[i]) < 10:
                 print("--- Result :", predict[i])
