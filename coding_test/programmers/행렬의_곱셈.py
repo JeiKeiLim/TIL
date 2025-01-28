@@ -39,10 +39,9 @@ def solution(arr1: List[List[int]], arr2: List[List[int]]) -> List[List[int]]:
         arr1_row = arr1[row]
         for col in range(m2):
             arr2_col = [arr2[i][col] for i in range(n2)]
-            answer[row][col] = sum(arr1_row[i]*arr2_col[i] for i in range(m1))
+            answer[row][col] = sum(arr1_row[i] * arr2_col[i] for i in range(m1))
 
     return answer
-
 
 
 if __name__ == "__main__":
