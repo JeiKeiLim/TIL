@@ -54,6 +54,29 @@ Constraints:
 
 
 class Solution:
+    def findMaxFish3(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        m = len(grid[0])
+        directions = ((0, 1), (0, -1), (1, 0), (-1, 0))
+
+        def dfs(r: int, c: int) -> int:
+            if r < 0 or c < 0 or r >= n or c >= m or grid[r][c] == 0:
+                return 0
+            result = grid[r][c]
+            grid[r][c] = 0
+            for dr, dc in directions:
+                result += dfs(r+dr, c+dc)
+            return result
+
+        answer = 0
+        for i in range(n):
+            for j in range(m):
+                if grid[i][j] == 0:
+                    continue
+                answer = max(answer, dfs(i, j))
+
+        return answer
+
     def findMaxFish2(self, grid: List[List[int]]) -> int:
         n = len(grid)
         m = len(grid[0])
@@ -136,5 +159,5 @@ if __name__ == "__main__":
     ]
     answers = [7, 1, 24, 22, 84, 84]
 
-    tester = Tester(Solution().findMaxFish, verbose=0)
+    tester = Tester(Solution().findMaxFish3, verbose=0)
     tester.test(tests, answers)
