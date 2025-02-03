@@ -54,7 +54,6 @@ result
 
 
 def solution(places: List[List[str]]) -> List[int]:
-    k = len(places)
     check_ds = (
         ((0, -1), (0, -2)),  # W
         ((0, 1), (0, 2)),  # E
