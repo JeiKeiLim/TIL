@@ -1,4 +1,5 @@
 from tester import Tester
+from typing import List
 
 """
 You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.
@@ -28,7 +29,12 @@ Constraints:
 
 
 class Solution:
-    def coinChange2(self, coins: list[int], amount: int) -> int:
+    def coinChange2(self, coins: List[int], amount: int) -> int:
+        """
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+        0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6
+        0, 1, 1, 2, 2, 1, 2, 2, 3, 3, 2, 3
+        """
         dp = [amount + 1] * (amount + 1)
         dp[0] = 0
 
@@ -38,10 +44,10 @@ class Solution:
 
         return dp[amount] if dp[amount] <= amount else -1
 
-    def coinChange(self, coins: list[int], amount: int) -> int:
+    def coinChange(self, coins: List[int], amount: int) -> int:
         coins.sort(reverse=True)
 
-        def backtrace(current: list[int], remain: int, min_cnt: int) -> int:
+        def backtrace(current: List[int], remain: int, min_cnt: int) -> int:
             if remain < 0:
                 return min(amount + 1, min_cnt)
 
@@ -87,5 +93,5 @@ if __name__ == "__main__":
         20,
     ]
 
-    tester = Tester(Solution().coinChange2)
+    tester = Tester(Solution().coinChange3)
     tester.test(tests, answers)
