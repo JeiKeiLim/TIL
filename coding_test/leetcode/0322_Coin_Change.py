@@ -93,5 +93,5 @@ if __name__ == "__main__":
         20,
     ]
 
-    tester = Tester(Solution().coinChange3)
+    tester = Tester(Solution().coinChange2)
     tester.test(tests, answers)
