@@ -29,7 +29,7 @@ def generate_random_int_array(
 
 
 class Tester:
-    def __init__(self, test_func, exact_match=False, verbose=1):
+    def __init__(self, test_func, exact_match=False, verbose=0) -> None:
         self.test_func = test_func
         self.verbose = verbose
         self.exact_match = exact_match
