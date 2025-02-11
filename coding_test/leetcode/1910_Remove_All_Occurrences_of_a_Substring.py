@@ -37,12 +37,24 @@ s and part consist of lowercase English letters.
 
 
 class Solution:
+    def removeOccurrences3(self, s: str, part: str) -> str:
+        stack = ""
+        m = len(part)
+        for char in s:
+            stack += char
+
+            if len(stack) < m:
+                continue
+            while stack[-m:] == part:
+                stack = stack[:-m]
+        return stack
+
     def removeOccurrences2(self, s: str, part: str) -> str:
         stack = []
         for char in s:
             stack.append(char)
 
-            if "".join(stack[-len(part):]) == part:
+            if "".join(stack[-len(part) :]) == part:
                 for _ in range(len(part)):
                     stack.pop()
 
@@ -52,9 +64,9 @@ class Solution:
         no_change = False
         while not no_change:
             no_change = True
-            for i in range(len(s)-len(part)+1):
+            for i in range(len(s) - len(part) + 1):
                 if s[i:].startswith(part):
-                    s = s[:i] + s[i+len(part):]
+                    s = s[:i] + s[i + len(part) :]
                     no_change = False
                     break
         return s
@@ -66,11 +78,11 @@ if __name__ == "__main__":
         ["axxxxyyyyb", "xy"],
         ["gjzgbpggjzgbpgsvpwdk", "gjzgbpg"],
         [
-            "".join([chr(random.randint(ord('a'), ord('z'))) for _ in range(1000)]),
-            "".join([chr(random.randint(ord('a'), ord('z'))) for _ in range(100)])
-        ]
+            "".join([chr(random.randint(ord("a"), ord("z"))) for _ in range(1000)]),
+            "".join([chr(random.randint(ord("a"), ord("z"))) for _ in range(100)]),
+        ],
     ]
     answers = ["dab", "ab", "svpwdk", ""]
 
-    tester = Tester(Solution().removeOccurrences)
+    tester = Tester(Solution().removeOccurrences3)
     tester.test(tests, answers)
