@@ -17,7 +17,7 @@ class ListNode:
         while node is not None:
             if node.val not in node_map:
                 node_map[node.val] = [node]
-            elif node in  node_map[node.val]:
+            elif node in node_map[node.val]:
                 result.append(f"(Cycle -> {node.val})")
                 break
             else:
@@ -65,6 +65,9 @@ class TreeNode:
         traverse(self)
         return str(result)
 
+    def __eq__(self, value: "TreeNode") -> bool:
+        return str(self) == str(value)
+
     def __len__(self) -> int:
         length = [0]
 
@@ -83,8 +86,16 @@ class TreeNode:
 
 def get_TreeNode(nums: List[Optional[int]]) -> TreeNode:
     root = TreeNode(nums[0])
+    if len(nums) == 1:
+        return root
+
     root.left = TreeNode(nums[1])
+    if len(nums) == 2:
+        return root
+
     root.right = TreeNode(nums[2])
+    if len(nums) == 3:
+        return root
 
     nodes = [root.left, root.right]
 
