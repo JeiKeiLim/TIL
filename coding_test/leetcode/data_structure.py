@@ -83,6 +83,32 @@ class TreeNode:
         traverse(self)
         return length[0]
 
+    def get_preorder(self) -> List[int]:
+        result = []
+        queue = [self]
+        while queue:
+            node = queue.pop()
+            if node is None:
+                continue
+            result.append(node.val)
+
+            queue.append(node.right)
+            queue.append(node.left)
+        return result
+
+    def get_postorder(self) -> List[int]:
+        result = []
+        queue = [self]
+        while queue:
+            node = queue.pop()
+            if node is None:
+                continue
+            result.append(node.val)
+            queue.append(node.left)
+            queue.append(node.right)
+
+        return result[::-1]
+
 
 def get_TreeNode(nums: List[Optional[int]]) -> TreeNode:
     root = TreeNode(nums[0])
