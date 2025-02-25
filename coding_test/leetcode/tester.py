@@ -28,6 +28,31 @@ def generate_random_int_array(
     return [random.randint(start_n, end_n) for _ in range(n)]
 
 
+def generate_random_2d_int_array(
+    n: int, m: int, start_n: int = 0, end_n: int = 1000, no_duplicate: bool = False
+) -> List[List[int]]:
+    nums = list(range(start_n, end_n + 1))
+    random.shuffle(nums)
+    next_nums = []
+    result = [[-1] * m for _ in range(n)]
+    for i in range(n):
+        if len(nums) < m:
+            next_nums += nums
+            nums = next_nums
+            next_nums = []
+            random.shuffle(nums)
+
+        for j in range(m):
+            if no_duplicate:
+                n = nums.pop()
+                result[i][j] = n
+                next_nums.append(n)
+            else:
+                result[i][j] = random.randint(start_n, end_n)
+
+    return result
+
+
 class Tester:
     def __init__(self, test_func, exact_match=False, verbose=0) -> None:
         self.test_func = test_func
@@ -84,7 +109,7 @@ class Tester:
                     n_vals = len(test_vals[j])
                 except Exception:
                     pass
-                print("    Arg #%d - " % (j+1), end="")
+                print("    Arg #%d - " % (j + 1), end="")
                 if self.verbose > 0 or n_vals < 20:
                     print("%s" % (test_vals[j]))
                 else:
@@ -104,9 +129,7 @@ class Tester:
                 print("--- Is correct ?", self.is_correct(predict[i], answers[i]))
 
             if run_time < 0.001:
-                print(
-                    "Took %.3f micro seconds" % (run_time * 1000 * 1000)
-                )
+                print("Took %.3f micro seconds" % (run_time * 1000 * 1000))
             elif run_time < 1:
                 print("Took %.3f milli seconds" % (run_time * 1000))
             else:
