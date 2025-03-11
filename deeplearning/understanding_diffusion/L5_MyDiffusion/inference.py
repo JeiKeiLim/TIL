@@ -259,7 +259,9 @@ def show_images(
 if __name__ == "__main__":
     args = get_args()
 
-    if not torch.cuda.is_available():
+    if args.device == "mps" and not torch.backends.mps.is_available():
+        args.device = "cpu"
+    elif args.device.startswith("cuda") and not torch.cuda.is_available():
         args.device = "cpu"
 
     device = torch.device(args.device)
