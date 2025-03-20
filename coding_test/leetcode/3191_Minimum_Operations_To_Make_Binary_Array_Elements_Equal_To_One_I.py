@@ -57,10 +57,36 @@ Constraints:
 
 
 class Solution:
+    def minOperations3(self, nums: List[int]) -> int:
+        n = len(nums)
+        answer = 0
+        for i in range(n - 2):
+            if nums[i] == 1:
+                continue
+
+            nums[i] ^= 1
+            nums[i + 1] ^= 1
+            nums[i + 2] ^= 1
+            answer += 1
+
+        return -1 if 0 in nums else answer
+
+    def minOperations2(self, nums: List[int]) -> int:
+        n = len(nums)
+        answer = 0
+        for i in range(n - 2):
+            if nums[i] == 1:
+                continue
+
+            for j in range(i, i + 3):
+                nums[j] ^= 1
+            answer += 1
+
+        return answer if sum(nums[-3:]) == 3 else -1
+
     def minOperations(self, nums: List[int]) -> int:
         n = len(nums)
         answer = 0
-        total = sum(nums)
         for i in range(n):
             if nums[i] == 1:
                 continue
@@ -70,16 +96,11 @@ class Solution:
             for j in range(si, ei):
                 if nums[j] == 0:
                     nums[j] = 1
-                    total += 1
                 else:
                     nums[j] = 0
-                    total -= 1
             answer += 1
 
-            if total == n:
-                return answer
-
-        return -1
+        return answer if sum(nums[-3:]) == 3 else -1
 
 
 if __name__ == "__main__":
@@ -92,5 +113,5 @@ if __name__ == "__main__":
     ]
     answers = [3, -1, 6, 9, -1]
 
-    tester = Tester(Solution().minOperations)
+    tester = Tester(Solution().minOperations3)
     tester.test(tests, answers)
