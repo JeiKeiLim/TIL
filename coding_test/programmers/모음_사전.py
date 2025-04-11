@@ -48,6 +48,28 @@ word       result
 4. "EIO"는 1189번째 단어입니다.
 """
 
+def solution2(word: str) -> int:
+    """
+    781, 156, 31, 6, 1
+    A: 1
+    AA: 2
+    AAA: 3
+    AAAA: 4
+    AAAE: 4+6
+    AAAI: 4+6+6
+    AAAO: 4+6+6+6
+    AAAU: 4+6+6+6+6
+    AAE: 3+6*5+1 = 34
+    AAI: 3+6*5*2+2 = 65
+    AE: 2+31*5+1 = 158
+    E: 1+156*5+1 = 782
+    """
+    word_n = [781, 156, 31, 6, 1]
+    answer = 0
+    for i, w in enumerate(word):
+        answer += word_n[i] * "AEIOU".index(w) + 1
+    return answer
+
 
 def solution(word: str) -> int:
     """
@@ -72,9 +94,10 @@ if __name__ == "__main__":
         ["I"],
         ["EIO"],
         ["AAAIU"],
-        ["UUUUU"]
+        ["UUUUU"],
+        ["E"]
     ]
-    answers = [6, 10, 1563, 1189, 21, 3905]
+    answers = [6, 10, 1563, 1189, 21, 3905, 1+156*5+1]
 
-    tester = Tester(solution)
+    tester = Tester(solution2)
     tester.test(tests, answers)
