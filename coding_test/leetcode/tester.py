@@ -1,5 +1,6 @@
 import time
 import random
+import tracemalloc
 
 from typing import List
 from copy import deepcopy
@@ -97,7 +98,10 @@ class Tester:
             test_args = deepcopy(test_vals)
             s_time = time.time()
 
+            tracemalloc.start()
             predict[i] = self.test_func(*test_args)
+            _, peak_memory = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
 
             e_time = time.time()
             run_time = e_time - s_time
@@ -134,4 +138,5 @@ class Tester:
                 print("Took %.3f milli seconds" % (run_time * 1000))
             else:
                 print("Took %.3fseconds" % run_time)
+            print(f"Memory usage: {peak_memory / 1024:.2f} KB")
             print("")

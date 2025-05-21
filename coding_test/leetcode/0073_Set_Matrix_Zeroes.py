@@ -1,8 +1,6 @@
 from typing import List
 from tester import Tester, generate_random_2d_int_array
 
-import tracemalloc
-
 """
 Given an m x n integer matrix matrix, if an element is 0, set its entire row and column to 0's.
 You must do it in place.
@@ -53,8 +51,8 @@ class Solution:
         for i in range(n):
             for j in range(m):
                 if matrix[i][j] == 0:
-                    row_mask |= (1 << i)
-                    col_mask |= (1 << j)
+                    row_mask |= 1 << i
+                    col_mask |= 1 << j
 
         for i in range(n):
             if (row_mask >> i) & 1:
@@ -65,7 +63,6 @@ class Solution:
                 for i in range(n):
                     matrix[i][j] = 0
         return matrix
-
 
     def setZeroes2(self, matrix: List[List[int]]) -> List[List[int]]:
         """
@@ -93,7 +90,6 @@ class Solution:
                     matrix[i][j] = 0
 
         return matrix
-        
 
     def setZeroes(self, matrix: List[List[int]]) -> List[List[int]]:
         """Naive approach.
@@ -128,7 +124,7 @@ if __name__ == "__main__":
         [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]],
         [[[0]]],
         [[[1, 0, 3]]],
-        [generate_random_2d_int_array(200, 200, start_n=-2**7, end_n=2**7- 1)],
+        [generate_random_2d_int_array(200, 200, start_n=-(2**7), end_n=2**7 - 1)],
     ]
     answers = [
         [[1, 0, 1], [0, 0, 0], [1, 0, 1]],
@@ -136,10 +132,8 @@ if __name__ == "__main__":
         [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
         [[0]],
         [[0, 0, 0]],
-        Solution().setZeroes([x.copy() for x in tests[-1][0]])
+        Solution().setZeroes([x.copy() for x in tests[-1][0]]),
     ]
 
-    tracemalloc.start()
-    tester = Tester(Solution().setZeroes3)
-    tracemalloc.stop()
+    tester = Tester(Solution().setZeroes2)
     tester.test(tests, answers)
