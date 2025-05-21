@@ -138,5 +138,5 @@ class Tester:
                 print("Took %.3f milli seconds" % (run_time * 1000))
             else:
                 print("Took %.3fseconds" % run_time)
-            print(f"Memory usage: {peak_memory / 1024:.2f} KB")
+            print(f"Memory usage: {peak_memory / 1024:,.2f} KB")
             print("")
