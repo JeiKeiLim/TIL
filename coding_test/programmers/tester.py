@@ -55,10 +55,13 @@ def generate_random_2d_int_array(
 
 
 class Tester:
-    def __init__(self, test_func, exact_match=False, verbose=0) -> None:
+    def __init__(
+        self, test_func, exact_match=False, verbose=0, incorrect_only: bool = False
+    ) -> None:
         self.test_func = test_func
         self.verbose = verbose
         self.exact_match = exact_match
+        self.incorrect_only = incorrect_only
 
     def is_correct(self, predict, answer):
         if answer is None:
@@ -91,7 +94,7 @@ class Tester:
         else:
             return predict == answer
 
-    def test(self, tests, answers, exact_match=False):
+    def test(self, tests, answers):
 
         predict = [[]] * len(tests)
         for i, test_vals in enumerate(tests):
@@ -105,6 +108,11 @@ class Tester:
 
             e_time = time.time()
             run_time = e_time - s_time
+
+            is_correct = self.is_correct(predict[i], answers[i])
+
+            if self.incorrect_only and is_correct:
+                continue
 
             print("Case #%d" % (i + 1))
             for j in range(len(test_vals)):
@@ -130,7 +138,7 @@ class Tester:
                 ):
                     print("--- Answer :", answers[i])
 
-                print("--- Is correct ?", self.is_correct(predict[i], answers[i]))
+                print("--- Is correct ?", is_correct)
 
             if run_time < 0.001:
                 print("Took %.3f micro seconds" % (run_time * 1000 * 1000))
