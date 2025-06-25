@@ -55,21 +55,18 @@ def solution(diffs: List[int], times: List[int], limit: int) -> int:
 
         return True
 
-    left = 0
-    right = max(diffs)
-    seen = set([(0, 1)])
+    left = 1
+    right = max(diffs) + 1
     answer = right
 
-    mid = (left + right) // 2
-    while left < right and (left, right) not in seen:
+    while left <= right:
         mid = (left + right) // 2
-        seen.add((left, right))
 
         if is_solvable(mid):
-            right = mid
+            right = mid - 1
             answer = min(answer, mid)
         else:
-            left = mid
+            left = mid + 1
 
     return answer
 
