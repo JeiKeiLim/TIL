@@ -45,22 +45,18 @@ def solution(maps: List[str]) -> int:
         dist_map = [[max_dist] * m for _ in range(n)]
         dist_map[src[0]][src[1]] = 0
 
-        result = max_dist
         queue = deque([src])
         while queue:
             y, x = queue.popleft()
 
-            if dist_map[y][x] >= result:
-                continue
-
-            if (y, x) == dest:
-                result = min(result, dist_map[y][x])
+            if dist_map[y][x] >= dist_map[dest[0]][dest[1]]:
                 continue
 
             for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1)):
                 ny, nx = y + dy, x + dx
                 if ny < 0 or ny >= n or nx < 0 or nx >= m:
                     continue
+
                 if maps[ny][nx] == "X":
                     continue
 
