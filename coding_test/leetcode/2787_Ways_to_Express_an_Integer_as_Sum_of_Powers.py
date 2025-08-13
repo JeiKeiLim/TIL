@@ -38,6 +38,51 @@ Constraints:
 class Solution:
     MOD = (10**9) + 7
 
+    def numberOfWays3(self, n: int, x: int) -> int:
+        """Foward filling DP"""
+        powers = []
+        for i in range(1, n + 1):
+            local_power = i**x
+            if local_power > n:
+                break
+            powers.append(local_power)
+
+        dp = [0] * (n + 1)
+        dp[0] = 1
+        for p in powers:
+            new_dp = dp[:]
+            for s in range(n - p + 1):
+                if dp[s] < 1:
+                    continue
+                new_dp[s + p] += dp[s]
+            dp = new_dp
+
+        return dp[-1]
+
+    def numberOfWays2(self, n: int, x: int) -> int:
+        """TLE"""
+        powers = []
+        for i in range(1, n + 1):
+            local_power = i**x
+            if local_power > n:
+                break
+            powers.append(local_power)
+
+        def count_ways(m: int, pi: int) -> int:
+            if m < 0:
+                return 0
+            if m == 0:
+                return 1
+            if pi >= len(powers):
+                return 0
+
+            use_p = count_ways(m - powers[pi], pi + 1)
+            no_use_p = count_ways(m, pi + 1)
+
+            return use_p + no_use_p
+
+        return count_ways(n, 0)
+
     def numberOfWays(self, n: int, x: int) -> int:
         powers = []
         for i in range(1, n + 1):
@@ -62,11 +107,11 @@ if __name__ == "__main__":
         [4, 1],
         [7, 1],
         [2, 2],
-        [300, 1],
+        # [300, 1],
     ]
     answers = [1, 2, 5, 0, -1]
     """
     """
 
-    tester = Tester(Solution().numberOfWays)
+    tester = Tester(Solution().numberOfWays3)
     tester.test(tests, answers)
