@@ -54,13 +54,13 @@ class Solution:
             for s in range(n - p + 1):
                 if dp[s] < 1:
                     continue
-                new_dp[s + p] += dp[s]
+                new_dp[s + p] = (new_dp[s + p] + dp[s]) % self.MOD
             dp = new_dp
 
         return dp[-1]
 
     def numberOfWays2(self, n: int, x: int) -> int:
-        """TLE"""
+        """Naive recursive TLE"""
         powers = []
         for i in range(1, n + 1):
             local_power = i**x
@@ -107,11 +107,9 @@ if __name__ == "__main__":
         [4, 1],
         [7, 1],
         [2, 2],
-        # [300, 1],
+        [300, 1],
     ]
     answers = [1, 2, 5, 0, -1]
-    """
-    """
 
     tester = Tester(Solution().numberOfWays3)
     tester.test(tests, answers)
