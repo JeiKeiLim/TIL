@@ -5,6 +5,8 @@ import tracemalloc
 from typing import List
 from copy import deepcopy
 
+from functools import partial
+
 
 def generate_random_char(start: str = "a", end: str = "z") -> str:
     return chr(random.randint(ord(start), ord(end)))
@@ -54,8 +56,22 @@ def generate_random_2d_int_array(
     return result
 
 
+def _test_class(
+    test_class, actions: list[str], inputs: list[list]
+) -> list:
+    instance = test_class(*inputs[0])
+    results = [None]
+    for i in range(1, len(actions)):
+        action, input = actions[i], inputs[i]
+        results.append(getattr(instance, action)(*input))
+
+    return results
+
+
 class Tester:
     def __init__(self, test_func, exact_match=False, verbose=0) -> None:
+        if isinstance(test_func, type):
+            test_func = partial(_test_class, test_func)
         self.test_func = test_func
         self.verbose = verbose
         self.exact_match = exact_match
@@ -140,3 +156,4 @@ class Tester:
                 print("Took %.3fseconds" % run_time)
             print(f"Memory usage: {peak_memory / 1024:,.2f} KB")
             print("")
+
