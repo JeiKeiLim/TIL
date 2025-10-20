@@ -26,6 +26,22 @@ operations[i] will be either "++X", "X++", "--X", or "X--".
 """
 
 
+class Solution3:
+    def finalValueAfterOperations(self, operations: list[str]) -> int:
+        return sum(1 if op[1] == "+" else -1 for op in operations)
+
+
+class Solution2:
+    def finalValueAfterOperations(self, operations: list[str]) -> int:
+        answer = 0
+        for op in operations:
+            if op[1] == "+":
+                answer += 1
+            else:
+                answer -= 1
+        return answer
+
+
 class Solution:
     def finalValueAfterOperations(self, operations: list[str]) -> int:
         op_map = {
@@ -49,5 +65,5 @@ if __name__ == "__main__":
     ]
     answers = [1, 3, 0]
 
-    tester = Tester(Solution().finalValueAfterOperations)
+    tester = Tester(Solution3().finalValueAfterOperations)
     tester.test(tests, answers)
