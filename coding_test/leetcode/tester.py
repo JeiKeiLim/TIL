@@ -70,6 +70,21 @@ def _test_class(
 
 class Tester:
     def __init__(self, test_func, exact_match=False, verbose=0) -> None:
+        """Initialize the Tester class.
+
+        How to use with class:
+        Example:
+            tests = [
+                [
+                    ["method1", "method2", ...],
+                    [[arg1_for_method1, arg2_for_method1, ...], [arg1_for_method2, arg2_for_method2, ...], ...
+                ]
+            ]
+
+            tester = Tester(ClassName)
+            tester.test(tests, answers)
+
+        """
         if isinstance(test_func, type):
             test_func = partial(_test_class, test_func)
         self.test_func = test_func
