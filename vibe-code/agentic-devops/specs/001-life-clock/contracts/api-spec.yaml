@@ -1,0 +1,498 @@
+openapi: 3.0.3
+info:
+  title: Life Clock API
+  description: REST API for the Life Clock app - personal life visualization tool
+  version: 1.0.0
+  contact:
+    name: Life Clock Team
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+tags:
+  - name: profile
+    description: User profile operations (birth date management)
+  - name: season
+    description: Life season calculations
+  - name: events
+    description: Life events CRUD operations
+
+paths:
+  /api/profile:
+    get:
+      tags:
+        - profile
+      summary: Get user profile
+      description: Retrieve the user's birth date and profile information
+      operationId: getProfile
+      responses:
+        '200':
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+              example:
+                birthDate: "1990-05-15"
+                createdAt: "2025-01-05T10:30:00Z"
+                updatedAt: "2025-01-05T10:30:00Z"
+        '404':
+          description: Profile not found (user hasn't set birth date yet)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Profile not found"
+                message: "Please set your birth date to get started"
+
+    put:
+      tags:
+        - profile
+      summary: Create or update user profile
+      description: Set or update the user's birth date
+      operationId: updateProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdate'
+            example:
+              birthDate: "1990-05-15"
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: Invalid birth date
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                futureDate:
+                  value:
+                    error: "Invalid birth date"
+                    message: "Birth date cannot be in the future"
+                invalidFormat:
+                  value:
+                    error: "Invalid birth date"
+                    message: "Birth date must be in YYYY-MM-DD format"
+
+  /api/season:
+    get:
+      tags:
+        - season
+      summary: Get current life season
+      description: Calculate and return the user's current life season based on their age
+      operationId: getCurrentSeason
+      responses:
+        '200':
+          description: Season calculated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LifeSeason'
+              example:
+                season: "Summer"
+                age: 34.8
+                ageRange:
+                  min: 21.25
+                  max: 42.5
+                progressPercent: 63.8
+                lifeProgressPercent: 40.9
+        '404':
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Profile not found"
+                message: "Please set your birth date first"
+
+  /api/events:
+    get:
+      tags:
+        - events
+      summary: List all life events
+      description: Retrieve all life events, optionally filtered by past/future
+      operationId: listEvents
+      parameters:
+        - name: filter
+          in: query
+          description: Filter events by time period
+          required: false
+          schema:
+            type: string
+            enum: [past, future, all]
+            default: all
+        - name: sort
+          in: query
+          description: Sort order
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+      responses:
+        '200':
+          description: Events retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  events:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LifeEvent'
+                  count:
+                    type: integer
+                    description: Total number of events
+              example:
+                events:
+                  - id: "550e8400-e29b-41d4-a716-446655440000"
+                    date: "2010-06-15"
+                    description: "Graduated from university"
+                    isFuture: false
+                    createdAt: "2025-01-05T10:35:00Z"
+                    updatedAt: "2025-01-05T10:35:00Z"
+                  - id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+                    date: "2030-12-31"
+                    description: "Retirement goal"
+                    isFuture: true
+                    createdAt: "2025-01-05T10:40:00Z"
+                    updatedAt: "2025-01-05T10:40:00Z"
+                count: 2
+
+    post:
+      tags:
+        - events
+      summary: Create a new life event
+      description: Add a new event to the timeline
+      operationId: createEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventCreate'
+            example:
+              date: "2010-06-15"
+              description: "Graduated from university"
+      responses:
+        '201':
+          description: Event created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LifeEvent'
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                date: "2010-06-15"
+                description: "Graduated from university"
+                isFuture: false
+                createdAt: "2025-01-05T10:35:00Z"
+                updatedAt: "2025-01-05T10:35:00Z"
+        '400':
+          description: Invalid event data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                emptyDescription:
+                  value:
+                    error: "Invalid event"
+                    message: "Description cannot be empty"
+                invalidDate:
+                  value:
+                    error: "Invalid event"
+                    message: "Date must be in YYYY-MM-DD format"
+                tooLong:
+                  value:
+                    error: "Invalid event"
+                    message: "Description must be 500 characters or less"
+
+  /api/events/{eventId}:
+    get:
+      tags:
+        - events
+      summary: Get a specific event
+      description: Retrieve details of a single life event
+      operationId: getEvent
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          description: UUID of the event
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Event retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LifeEvent'
+        '404':
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Event not found"
+                message: "No event found with the given ID"
+
+    put:
+      tags:
+        - events
+      summary: Update an existing event
+      description: Modify the date or description of an event
+      operationId: updateEvent
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          description: UUID of the event
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventUpdate'
+            example:
+              date: "2010-06-20"
+              description: "Graduated from university (corrected date)"
+      responses:
+        '200':
+          description: Event updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LifeEvent'
+        '400':
+          description: Invalid event data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - events
+      summary: Delete an event
+      description: Remove an event from the timeline
+      operationId: deleteEvent
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          description: UUID of the event
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Event deleted successfully
+        '404':
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Event not found"
+                message: "No event found with the given ID"
+
+components:
+  schemas:
+    UserProfile:
+      type: object
+      required:
+        - birthDate
+        - createdAt
+        - updatedAt
+      properties:
+        birthDate:
+          type: string
+          format: date
+          description: User's date of birth in YYYY-MM-DD format
+          example: "1990-05-15"
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when profile was created
+          example: "2025-01-05T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when profile was last updated
+          example: "2025-01-05T10:30:00Z"
+
+    ProfileUpdate:
+      type: object
+      required:
+        - birthDate
+      properties:
+        birthDate:
+          type: string
+          format: date
+          description: User's date of birth in YYYY-MM-DD format (must be in the past)
+          example: "1990-05-15"
+
+    LifeSeason:
+      type: object
+      required:
+        - season
+        - age
+        - ageRange
+        - progressPercent
+        - lifeProgressPercent
+      properties:
+        season:
+          type: string
+          enum: [Spring, Summer, Fall, Winter]
+          description: Current life season
+          example: "Summer"
+        age:
+          type: number
+          format: float
+          description: Current age in years (with decimal precision)
+          example: 34.8
+        ageRange:
+          type: object
+          required:
+            - min
+            - max
+          properties:
+            min:
+              type: number
+              format: float
+              description: Minimum age for current season
+              example: 21.25
+            max:
+              type: number
+              format: float
+              description: Maximum age for current season
+              example: 42.5
+        progressPercent:
+          type: number
+          format: float
+          description: Progress through current season (0-100)
+          example: 63.8
+        lifeProgressPercent:
+          type: number
+          format: float
+          description: Progress through entire life (0-100)
+          example: 40.9
+
+    LifeEvent:
+      type: object
+      required:
+        - id
+        - date
+        - description
+        - isFuture
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the event
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        date:
+          type: string
+          format: date
+          description: Date of the event in YYYY-MM-DD format
+          example: "2010-06-15"
+        description:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: Text description of the event
+          example: "Graduated from university"
+        isFuture:
+          type: boolean
+          description: Whether the event is in the future (computed)
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when event was created
+          example: "2025-01-05T10:35:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when event was last updated
+          example: "2025-01-05T10:35:00Z"
+
+    EventCreate:
+      type: object
+      required:
+        - date
+        - description
+      properties:
+        date:
+          type: string
+          format: date
+          description: Date of the event in YYYY-MM-DD format
+          example: "2010-06-15"
+        description:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: Text description of the event
+          example: "Graduated from university"
+
+    EventUpdate:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          description: Updated date of the event
+          example: "2010-06-20"
+        description:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: Updated description
+          example: "Graduated from university (corrected date)"
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error type/category
+          example: "Invalid birth date"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Birth date cannot be in the future"
+        details:
+          type: object
+          description: Additional error details (optional)
+          additionalProperties: true
